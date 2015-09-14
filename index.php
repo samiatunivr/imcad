@@ -386,12 +386,7 @@ img {
             Search Engine:
             Google <input type="radio" name="engine" value="google"/>
             Flickr <input type="radio" name="engine" value="flickr"/><br/>
-<!--input type="radio" name="engine"
-    <?php /*if (isset($gender) && $gender=="google");*/ ?>
-       value="female">Google
-<input type="radio" name="engine"
-    <?php /*if (isset($gender) && $gender=="flickr");*/ ?>
-       value="flickr">Flickr-->
+
 
         <br> <input type="submit" value="Search"
                     style="height:50px; width:90px; -moz-border-radius:15px;  border-radius: 15px;  border: 1px solid yellowgreen; " " />
