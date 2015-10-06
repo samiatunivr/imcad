@@ -15,6 +15,34 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 
+<link rel="stylesheet" type="text/css" media="screen"
+      href="http://cdnjs.cloudflare.com/ajax/libs/fancybox/1.3.4/jquery.fancybox-1.3.4.css"/>
+<style type="text/css">
+    a.fancybox img {
+        border: none;
+        box-shadow: 0 1px 7px rgba(0, 0, 0, 0.6);
+        -o-transform: scale(1, 1);
+        -ms-transform: scale(1, 1);
+        -moz-transform: scale(1, 1);
+        -webkit-transform: scale(1, 1);
+        transform: scale(1, 1);
+        -o-transition: all 0.2s ease-in-out;
+        -ms-transition: all 0.2s ease-in-out;
+        -moz-transition: all 0.2s ease-in-out;
+        -webkit-transition: all 0.2s ease-in-out;
+        transition: all 0.2s ease-in-out;
+    }
+
+    a.fancybox:hover img {
+        position: relative;
+        z-index: 999;
+        -o-transform: scale(1.03, 1.03);
+        -ms-transform: scale(1.03, 1.03);
+        -moz-transform: scale(1.03, 1.03);
+        -webkit-transform: scale(1.03, 1.03);
+        transform: scale(1.03, 1.03);
+    }
+</style>
 
 <!-- TemplateBeginEditable name="doctitle" -->
 
@@ -346,6 +374,31 @@ img {
 </head>
 <center>
 <body>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+<script type="text/javascript" src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<script type="text/javascript"
+        src="http://cdnjs.cloudflare.com/ajax/libs/fancybox/1.3.4/jquery.fancybox-1.3.4.pack.min.js"></script>
+<script type="text/javascript">
+    $(function ($) {
+        var addToAll = false;
+        var gallery = true;
+        var titlePosition = 'inside';
+        $(addToAll ? 'img' : 'img.fancybox').each(function () {
+            var $this = $(this);
+            var title = $this.attr('title');
+            var src = $this.attr('data-big') || $this.attr('src');
+            var a = $('<a href="#" class="fancybox"></a>').attr('href', src).attr('title', title);
+            $this.wrap(a);
+        });
+        if (gallery)
+            $('a.fancybox').attr('rel', 'fancyboxgallery');
+        $('a.fancybox').fancybox({
+            titlePosition: titlePosition
+        });
+    });
+    $.noConflict();
+</script>
+
 <div class="header-outer">
     <div class="container">
         <div class="univr-logo">
@@ -371,10 +424,22 @@ img {
 <form class="rounded_edges" method="post" action="index.php">
     <table class=" rounded_edges" width="1000" border="0">
         <span class="STYLE4">
-          keyword: <input type="text" name="searchKeyword" placeholder="e.g., car"> bigrams: <input type="text"
-                                                                                                    name="bigrams"
-                                                                                                    placeholder="e.g., 5"> <br>
-            images <input type="text" name="numimages" placeholder="e.g., 100"> <br>
+          keyword: <input type="text" name="search"
+                          value="<?php echo isset($_POST['search']) ? $_POST['search'] : ''; ?>"
+                          placeholder="e.g., car"> &nbsp;   <!--Object Type:
+            device <input type="radio" name="constrain" value="device"/>
+            machine <input type="radio" name="constrain" value="machine"/>
+            animal <input type="radio" name="constrain" value="animal"/>
+            mammal <input type="radio" name="constrain" value="mammal"/>
+            container <input type="radio" name="constrain" value="container"/>
+            computer <input type="radio" name="constrain" value="computer"/>
+            human <input type="radio" name="constrain" value="human"/>
+            aircraft <input type="radio" name="constrain" value="aircraft"/>
+            vehicle <input type="radio" name="constrain" value="vehicle"/>
+            unknown <input type="radio" name="constrain" value="uknown"/><br/>-->
+            bigrams: <input type="text" name="bigrams" placeholder="e.g., 5">  images <input type="text"
+                                                                                             name="numimages"
+                                                                                             placeholder="e.g., 100"> <br>
         Filter: <i>basic</i> <input type="checkbox" style="height:20px; width:40px" name="Frequency" value="Frequency">
         <i>present participle</i> <input type="checkbox" style="height:20px; width:40px" name="Verbs" value="Verbs">
           <i>hyponymy</i> <input type="checkbox" style="height:20px; width:40px" name="Hyponymy" value="Hyponymy">
@@ -386,28 +451,71 @@ img {
             Search Engine:
             Google <input type="radio" name="engine" value="google"/>
             Flickr <input type="radio" name="engine" value="flickr"/><br/>
-
-
         <br> <input type="submit" value="Search"
                     style="height:50px; width:90px; -moz-border-radius:15px;  border-radius: 15px;  border: 1px solid yellowgreen; " " />
     </span>
     </table>
+    <p></p>
 </form>
 
+
+</a>
+
 <?php
+
 
 // error_reporting(E_ALL);
 ###############################################################
 
-#    input data
+#    input data configuration
 
 ###############################################################
 
-$queryInput = $_POST['searchKeyword'];
+$queryInput = $_POST['search'];
+
+$urlstr = urlencode($queryInput);
+
+header("Location: http://klimble.com/sami/IMCAD/index.php?q=$urlstr");
+
 
 if (empty($queryInput)) {
     echo 'Please fill up the required fields';
     exit;
+}
+
+
+echo '
+            <script type=\"text/javascript\">
+             window.location.href = "/index.php?q=" + $queryInput;
+
+            </script>
+        ';
+
+###############################################################
+
+#    object type configuration
+
+###############################################################
+if ($_POST['constrain'] == "device") {
+    $addMe = 'device';
+} elseif ($_POST['constrain'] == "machine") {
+    $addMe = 'machine';
+} elseif ($_POST['constrain'] == "animal") {
+    $addMe = 'animal';
+} elseif ($_POST['constrain'] == "mammal") {
+    $addMe = 'mammal';
+} elseif ($_POST['constrain'] == "container") {
+    $addMe = 'container';
+} elseif ($_POST['constrain'] == "computer") {
+    $addMe = 'computer';
+} elseif ($_POST['constrain'] == "human") {
+    $addMe = 'human';
+} elseif ($_POST['constrain'] == "aircraft") {
+    $addMe = 'aircraft';
+} elseif ($_POST['constrain'] == "vehicle") {
+    $addMe = 'vehicle';
+} else {
+    $addMe = '';
 }
 
 
@@ -545,9 +653,6 @@ $additional = array_intersect($hyperWords, $known_hyper);
 foreach ($additional as $key => $value) {
 
 }
-if ($queryInput == 'mouse') {
-    $addMe = 'device';
-}
 
 
 $bigramsinput = $_POST['bigrams'];
@@ -644,8 +749,15 @@ for ($c=0;$c<sizeof($keywords);$c++){
 
 }
 exit;*/
+if (!empty($addMe)) {
+    $info = $queryInput . '+' . $addMe;
+} else {
+    $info = $queryInput;
+}
 
-$data = $Flickr->search($queryInput);
+$data = $Flickr->search($info);
+
+
 foreach ($data['photos']['photo'] as $photo) {
     $imgid[] = $photo["id"];
 }
@@ -704,29 +816,19 @@ foreach ($imgid as $key => $value) {
                 $i = 0;
 
                 while ($i < count($data)) {
-
                     $tagsWord = $data[$i];
-
                     if (!in_array($tagsWord, $stopwords)) {
-
                         $class_word[$count1++] = depluralize($tagsWord);
-
                         $taglist[] = depluralize($tagsWord);
 
                     } else {
-
                         $junkWords[] = $tagsWord;
-
                     }
-
                     $i++;
-
                 }
 
             } else {
-
                 // remove stop words;
-
                 if (!in_array($tagquery, $stopwords)) {
 
                     $class_word[$count1++] = depluralize($tagquery);
@@ -863,7 +965,7 @@ foreach ($frequentWords as $key => $value) {
     $cmd = 'wn ' . '' . $value . ' ' . '-antsa';
     //echo $value;
     $ch = shell_exec($cmd);
-    $met = preg_match("/achromatism|achromia|chroma|color|texture|light/", $ch);
+    $met = preg_match("/color|texture|light/", $ch);
     if (!empty($met)) {
         $visualwords[] = $value;
     }
@@ -959,7 +1061,7 @@ array_map('unlink', glob("./*.txt"));
 ### fcom
 ################################################################
 
-
+echo ' <div class="row">';
 if (isset($_POST['FCOMBINATION'])) {
 // echo "<table class='round_edge3'  border='1'>";
     if ($_POST['engine'] == "google") {
@@ -979,17 +1081,26 @@ if (isset($_POST['FCOMBINATION'])) {
         $myFile = $queryInput . '_fcom.txt';
 
         $fp = fopen('./' . "$myFile", "wb");
-         for ($bi=0; $bi<=sizeof($fcom_grams);$bi++) {
+        for ($bi = 0; $bi <= sizeof($fcom_grams); $bi++) {
 
             if ($i <= $bigramsinput) {
-                $bi_guery = $fcom_grams[$bi] . '+' . $queryInput;
+                if (!empty($fcom_grams[$bi])) {
+                    $bi_guery = $fcom_grams[$bi] . '+' . $queryInput;
 
-                $data = $google->queryengine($bi_guery);
+                    if (!empty($addMe)) {
+                        $bi_guery = $bi_guery . '+' . $addMe;
+                    } else {
+
+                    }
+                }
+
+                $data = $google->queryengine($bi_guery, $num);
+
 
                 echo '<td width="150" align=center>' . $fcom_grams[$bi] . '</td>';
-                foreach ($data as $key=>$value) {
+                foreach ($data as $key => $value) {
                     $img_url = $value;
-                    echo '<img src="' . $img_url . '" width="104" height="142">';
+                    echo '<img class="fancybox" src="' . $img_url . '" width="300" height="190" class="round_edge3">';
                     $actual_link = $img_url . "\n";
 
                     fwrite($fp, $actual_link);
@@ -1005,9 +1116,7 @@ if (isset($_POST['FCOMBINATION'])) {
         fclose($fp);
 
 
-    }
-
-    else{
+    } else {
         echo "<table border='1' style='border-collapse:
 
            collapse;border-color: black;color: black'>";
@@ -1029,11 +1138,11 @@ if (isset($_POST['FCOMBINATION'])) {
             if ($i <= $bigramsinput) {
                 if (!empty($addMe)) {
                     $concat = '%2C' . $addMe;
-                    $bi_guery = $value . '%2C' . urlencode($queryInput) . '%2B' . $addMe;
+                    $bi_guery = $value . '+' . urlencode($queryInput) . '+' . $addMe;
 
 
                 } else {
-                    $bi_guery = $value . '%2C' . urlencode($queryInput);
+                    $bi_guery = $value . '+' . urlencode($queryInput);
 
                 }
 
@@ -1045,7 +1154,7 @@ if (isset($_POST['FCOMBINATION'])) {
 
                 foreach ($searchIMG['photos']['photo'] as $photo) {
 
-                    echo '<img src="' . 'http://farm' . $photo["farm"] . '.static.flickr.com/' . $photo["server"] . '/' . $photo["id"] . '_' . $photo["secret"] . '.jpg" width="104" height="142"  class="round_edge3"> ';
+                    echo '<img class="fancybox" src="' . 'http://farm' . $photo["farm"] . '.static.flickr.com/' . $photo["server"] . '/' . $photo["id"] . '_' . $photo["secret"] . '.jpg" width="300" height="190"  class="round_edge3"> ';
                     $actual_link = 'http://farm' . $photo["farm"] . '.static.flickr.com/' . $photo["server"] . '/' . $photo["id"] . '_' . $photo["secret"] . '.jpg' . "\n";
                     $lineNumber = $lineNumber + 1;
                     fwrite($fp, $actual_link);
@@ -1066,7 +1175,9 @@ if (isset($_POST['FCOMBINATION'])) {
 
     }
 }
+echo '</div> <br/>';
 
+echo ' <div class="row">';
 if (isset($_POST['Frequency'])) {
     if ($_POST['engine'] == "google") {
         echo "<table border='1' style='border-collapse:
@@ -1082,20 +1193,25 @@ if (isset($_POST['Frequency'])) {
         $num = round($search_count / $bigramsinput);
         $lineNumber = 1;
 
-        $myFile = $queryInput . '_fcom.txt';
+        $myFile = $queryInput . '_basic.txt';
 
         $fp = fopen('./' . "$myFile", "wb");
-        for ($bi=0; $bi<=sizeof($frequentWords);$bi++) {
+        for ($bi = 0; $bi <= sizeof($frequentWords); $bi++) {
 
             if ($i <= $bigramsinput) {
                 $bi_guery = $frequentWords[$bi] . '+' . $queryInput;
+                if (!empty($addMe)) {
+                    $bi_guery = $bi_guery . '+' . $addMe;
+                } else {
 
-                $data = $google->queryengine($bi_guery);
+                }
+
+                $data = $google->queryengine($bi_guery, $num);
 
                 echo '<td width="150" align=center>' . $frequentWords[$bi] . '</td>';
-                foreach ($data as $key=>$value) {
+                foreach ($data as $key => $value) {
                     $img_url = $value;
-                    echo '<img src="' . $img_url . '" width="104" height="142">';
+                    echo '<img class="fancybox" src="' . $img_url . '" width="300" height="190" class="round_edge3">';
                     $actual_link = $img_url . "\n";
 
                     fwrite($fp, $actual_link);
@@ -1111,8 +1227,7 @@ if (isset($_POST['Frequency'])) {
         fclose($fp);
 
 
-    }
-    else{
+    } else {
         echo "<table border='1' style='border-collapse:
 
            collapse;border-color: black;color: black'>";
@@ -1126,7 +1241,7 @@ if (isset($_POST['Frequency'])) {
         $num = round($search_count / $bigramsinput);
         $lineNumber = 1;
 
-        $myFile = $queryInput . '_fcom.txt';
+        $myFile = $queryInput . '_basic.txt';
 
         $fp = fopen('./' . "$myFile", "wb");
         foreach ($frequentWords as $key => $value) {
@@ -1134,11 +1249,11 @@ if (isset($_POST['Frequency'])) {
             if ($i <= $bigramsinput) {
                 if (!empty($addMe)) {
                     $concat = '%2C' . $addMe;
-                    $bi_guery = $value . '%2C' . urlencode($queryInput) . '%2B' . $addMe;
+                    $bi_guery = $value . '+' . urlencode($queryInput) . '+' . $addMe;
 
 
                 } else {
-                    $bi_guery = $value . '%2C' . urlencode($queryInput);
+                    $bi_guery = $value . '+' . urlencode($queryInput);
 
                 }
 
@@ -1150,7 +1265,7 @@ if (isset($_POST['Frequency'])) {
 
                 foreach ($searchIMG['photos']['photo'] as $photo) {
 
-                    echo '<img src="' . 'http://farm' . $photo["farm"] . '.static.flickr.com/' . $photo["server"] . '/' . $photo["id"] . '_' . $photo["secret"] . '.jpg" width="104" height="142"  class="round_edge3"> ';
+                    echo '<img class="fancybox" src="' . 'http://farm' . $photo["farm"] . '.static.flickr.com/' . $photo["server"] . '/' . $photo["id"] . '_' . $photo["secret"] . '.jpg" width="300" height="190"  class="round_edge3"> ';
                     $actual_link = 'http://farm' . $photo["farm"] . '.static.flickr.com/' . $photo["server"] . '/' . $photo["id"] . '_' . $photo["secret"] . '.jpg' . "\n";
                     $lineNumber = $lineNumber + 1;
                     fwrite($fp, $actual_link);
@@ -1174,13 +1289,14 @@ if (isset($_POST['Frequency'])) {
 
 }
 
+echo '</div> <br/>';
 
 ###############################################################
 
 #  re-Query flickr for bigrams obtained by QUALITY
 
 ###############################################################
-
+echo '<div class="row">';
 if (isset($_POST['Verbs'])) {
 
     if ($_POST['engine'] == "google") {
@@ -1200,16 +1316,21 @@ if (isset($_POST['Verbs'])) {
         $myFile = $queryInput . '_verb.txt';
 
         $fp = fopen('./' . "$myFile", "wb");
-        foreach($fcom3 as $key=>$value) {
+        foreach ($fcom3 as $key => $value) {
 
             if ($i <= $bigramsinput) {
                 $bi_guery = $value . '+' . $queryInput;
-                $data = $google->queryengine($bi_guery);
-                print_r($data);
+                if (!empty($addMe)) {
+                    $bi_guery = $bi_guery . '+' . $addMe;
+                } else {
+
+                }
+
+                $data = $google->queryengine($bi_guery, $num);
                 echo '<td width="150" align=center>' . $value . '</td>';
-                foreach ($data as $key=>$value) {
+                foreach ($data as $key => $value) {
                     $img_url = $value;
-                    echo '<img src="' . $img_url . '" width="104" height="142">';
+                    echo '<img class="fancybox" src="' . $img_url . '" width="300" height="190" class="round_edge3">';
                     $actual_link = $img_url . "\n";
 
                     fwrite($fp, $actual_link);
@@ -1225,8 +1346,7 @@ if (isset($_POST['Verbs'])) {
         fclose($fp);
 
 
-    }
-    else{
+    } else {
         echo "<table border='1' style='border-collapse:
 
            collapse;border-color: black;color: black'>";
@@ -1247,12 +1367,12 @@ if (isset($_POST['Verbs'])) {
 
             if ($i <= $bigramsinput) {
                 if (!empty($addMe)) {
-                    $concat = '%2C' . $addMe;
-                    $bi_guery = $value . '%2C' . urlencode($queryInput) . '%2B' . $addMe;
+                    $concat = '+' . $addMe;
+                    $bi_guery = $value . '+' . urlencode($queryInput) . '+' . $addMe;
 
 
                 } else {
-                    $bi_guery = $value . '%2C' . urlencode($queryInput);
+                    $bi_guery = $value . '+' . urlencode($queryInput);
 
                 }
 
@@ -1264,7 +1384,7 @@ if (isset($_POST['Verbs'])) {
 
                 foreach ($searchIMG['photos']['photo'] as $photo) {
 
-                    echo '<img src="' . 'http://farm' . $photo["farm"] . '.static.flickr.com/' . $photo["server"] . '/' . $photo["id"] . '_' . $photo["secret"] . '.jpg" width="104" height="142"  class="round_edge3"> ';
+                    echo '<img class="fancybox" src="' . 'http://farm' . $photo["farm"] . '.static.flickr.com/' . $photo["server"] . '/' . $photo["id"] . '_' . $photo["secret"] . '.jpg" width="300" height="190"  class="round_edge3"> ';
                     $actual_link = 'http://farm' . $photo["farm"] . '.static.flickr.com/' . $photo["server"] . '/' . $photo["id"] . '_' . $photo["secret"] . '.jpg' . "\n";
                     $lineNumber = $lineNumber + 1;
                     fwrite($fp, $actual_link);
@@ -1287,13 +1407,13 @@ if (isset($_POST['Verbs'])) {
 
 }
 
-
+echo '</div>';
 ###############################################################
 
 #  re-Query flickr for bigrams obtained by HYPNOMY
 
 ###############################################################
-
+echo ' <div class="row">';
 if (!empty($myarray2)) {
 
     if (isset($_POST['Hyponymy'])) {
@@ -1314,17 +1434,22 @@ if (!empty($myarray2)) {
             $myFile = $queryInput . '_hypo.txt';
 
             $fp = fopen('./' . "$myFile", "wb");
-            foreach($fcom1 as $key=>$value) {
+            foreach ($fcom1 as $key => $value) {
 
                 if ($i <= $bigramsinput) {
                     $bi_guery = $value . '+' . $queryInput;
+                    if (!empty($addMe)) {
+                        $bi_guery = $bi_guery . '+' . $addMe;
+                    } else {
 
-                    $data = $google->queryengine($bi_guery);
+                    }
 
-                    echo '<td width="150" align=center>' . $value. '</td>';
+                    $data = $google->queryengine($bi_guery, $num);
+
+                    echo '<td width="150" align=center>' . $value . '</td>';
                     foreach ($data as $key => $value) {
                         $img_url = $value;
-                        echo '<img src="' . $img_url . '" width="104" height="142">';
+                        echo '<img class="fancybox" src="' . $img_url . '" width="300" height="190" class="round_edge3">';
                         $actual_link = $img_url . "\n";
 
                         fwrite($fp, $actual_link);
@@ -1338,8 +1463,7 @@ if (!empty($myarray2)) {
                 }
             }
             fclose($fp);
-        }
-         else {
+        } else {
             echo "<table border='1' style='border-collapse:
 
            collapse;border-color: black;color: black'>";
@@ -1353,19 +1477,19 @@ if (!empty($myarray2)) {
             $num = round($search_count / $bigramsinput);
             $lineNumber = 1;
 
-            $myFile = $queryInput . '_verb.txt';
+            $myFile = $queryInput . '_hypo.txt';
 
             $fp = fopen('./' . "$myFile", "wb");
             foreach ($fcom1 as $key => $value) {
 
                 if ($i <= $bigramsinput) {
                     if (!empty($addMe)) {
-                        $concat = '%2C' . $addMe;
-                        $bi_guery = $value . '%2C' . urlencode($queryInput) . '%2B' . $addMe;
+                        $concat = '+' . $addMe;
+                        $bi_guery = $value . '+' . urlencode($queryInput) . '+' . $addMe;
 
 
                     } else {
-                        $bi_guery = $value . '%2C' . urlencode($queryInput);
+                        $bi_guery = $value . '+' . urlencode($queryInput);
 
                     }
 
@@ -1377,7 +1501,7 @@ if (!empty($myarray2)) {
 
                     foreach ($searchIMG['photos']['photo'] as $photo) {
 
-                        echo '<img src="' . 'http://farm' . $photo["farm"] . '.static.flickr.com/' . $photo["server"] . '/' . $photo["id"] . '_' . $photo["secret"] . '.jpg" width="104" height="142"  class="round_edge3"> ';
+                        echo '<img class="fancybox" src="' . 'http://farm' . $photo["farm"] . '.static.flickr.com/' . $photo["server"] . '/' . $photo["id"] . '_' . $photo["secret"] . '.jpg" width="300" height="190"  class="round_edge3"> ';
                         $actual_link = 'http://farm' . $photo["farm"] . '.static.flickr.com/' . $photo["server"] . '/' . $photo["id"] . '_' . $photo["secret"] . '.jpg' . "\n";
                         $lineNumber = $lineNumber + 1;
                         fwrite($fp, $actual_link);
@@ -1399,12 +1523,13 @@ if (!empty($myarray2)) {
     }
 }
 
+echo '</div><br/>';
 ###############################################################
 
 #  re-Query flickr for bigrams obtained by VISUAL ADJECTIVE
 
 ###############################################################
-
+echo ' <div class="row">';
 if (isset($_POST['VISUALADJ'])) {
 
 
@@ -1425,17 +1550,22 @@ if (isset($_POST['VISUALADJ'])) {
         $myFile = $queryInput . '_visadj.txt';
 
         $fp = fopen('./' . "$myFile", "wb");
-        foreach ($fcom3 as $key=>$value) {
+        foreach ($fcom2 as $key => $value) {
 
             if ($i <= $bigramsinput) {
                 $bi_guery = $value . '+' . $queryInput;
+                if (!empty($addMe)) {
+                    $bi_guery = $bi_guery . '+' . $addMe;
+                } else {
 
-                $data = $google->queryengine($bi_guery);
+                }
+
+                $data = $google->queryengine($bi_guery, $num);
 
                 echo '<td width="150" align=center>' . $value . '</td>';
                 foreach ($data as $key => $value) {
                     $img_url = $value;
-                    echo '<img src="' . $img_url . '" width="104" height="142">';
+                    echo '<img class="fancybox" src="' . $img_url . '" width="300" height="190" class="round_edge3">';
                     $actual_link = $img_url . "\n";
 
                     fwrite($fp, $actual_link);
@@ -1449,8 +1579,7 @@ if (isset($_POST['VISUALADJ'])) {
             }
         }
         fclose($fp);
-    }
-    else {
+    } else {
         echo "<table border='1' style='border-collapse:
 
            collapse;border-color: black;color: black'>";
@@ -1464,19 +1593,19 @@ if (isset($_POST['VISUALADJ'])) {
         $num = round($search_count / $bigramsinput);
         $lineNumber = 1;
 
-        $myFile = $queryInput . '_verb.txt';
+        $myFile = $queryInput . '_visualadj.txt';
 
         $fp = fopen('./' . "$myFile", "wb");
         foreach ($fcom2 as $key => $value) {
 
             if ($i <= $bigramsinput) {
                 if (!empty($addMe)) {
-                    $concat = '%2C' . $addMe;
-                    $bi_guery = $value . '%2C' . urlencode($queryInput) . '%2B' . $addMe;
+                    $concat = '+' . $addMe;
+                    $bi_guery = $value . '+' . urlencode($queryInput) . '+' . $addMe;
 
 
                 } else {
-                    $bi_guery = $value . '%2C' . urlencode($queryInput);
+                    $bi_guery = $value . '+' . urlencode($queryInput);
 
                 }
 
@@ -1488,7 +1617,7 @@ if (isset($_POST['VISUALADJ'])) {
 
                 foreach ($searchIMG['photos']['photo'] as $photo) {
 
-                    echo '<img src="' . 'http://farm' . $photo["farm"] . '.static.flickr.com/' . $photo["server"] . '/' . $photo["id"] . '_' . $photo["secret"] . '.jpg" width="104" height="142"  class="round_edge3"> ';
+                    echo '<img class="fancybox" src="' . 'http://farm' . $photo["farm"] . '.static.flickr.com/' . $photo["server"] . '/' . $photo["id"] . '_' . $photo["secret"] . '.jpg" width="300" height="190"  class="round_edge3"> ';
                     $actual_link = 'http://farm' . $photo["farm"] . '.static.flickr.com/' . $photo["server"] . '/' . $photo["id"] . '_' . $photo["secret"] . '.jpg' . "\n";
                     $lineNumber = $lineNumber + 1;
                     fwrite($fp, $actual_link);
@@ -1509,10 +1638,14 @@ if (isset($_POST['VISUALADJ'])) {
 
 }
 
+echo '</div> <br/>';
+
 
 ###########################################################
 ##          Display files
 ###########################################################
+
+echo ' <div class="row">';
 $directory = dir('.');
 # If you want to turn on Extension Filter, then uncomment this:
 //$allowed_ext = array(".sample", ".png", ".jpg", ".jpeg", ".txt", ".doc", ".xls");
@@ -1770,7 +1903,7 @@ for ($i = 0; $i < $i2; $i++) {
     echo $line;
 
 }
-
+echo '</div>'
 
 ?>
 
