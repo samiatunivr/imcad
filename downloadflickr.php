@@ -2,7 +2,7 @@
 <?php
 
 class downloadIMAGE {
-	private $apiKey = '9a7d65ff0d5468de279ef2fc2601a115';
+	private $apiKey = '';
 
 	public function __construct() {
 	}
