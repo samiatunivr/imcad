@@ -3,4 +3,4 @@ This project is designed and developed to help computer vision & machine learnin
 
 So I developed the application (though the computation time is relatively high compared to the standard search engines) but looking at the result is worth waiting. 
 
-To see a live demo of the application, please dont foreget to hestitate to try it yourself (www.klimble.com/sami/IMCAD)
+To see a live demo of the application, please dont hestitate to try it yourself (www.klimble.com/sami/IMCAD)
